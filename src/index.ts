@@ -80,22 +80,22 @@ const move = (ts: number): boolean => {
         joints     = game.joints,
         wormLength = game.wormLength
 
-  let length     = 0,
-      jointCount = 0,
-      cx         = nx,
-      cy         = ny
-
-  do {
-    let [x, y] = joints[jointCount]
-    length += Math.abs(cx - x) + Math.abs(cy - y)
-    cx = x
-    cy = y
-    jointCount += 1
-  } while (length < wormLength && jointCount < joints.length)
-
-  if (jointCount < joints.length) {
-    game.joints = joints.slice(0, jointCount - 1)
-  }
+  // let length     = 0,
+  //     jointCount = 0,
+  //     cx         = nx,
+  //     cy         = ny
+  //
+  // do {
+  //   let [x, y] = joints[jointCount]
+  //   length += Math.abs(cx - x) + Math.abs(cy - y)
+  //   cx = x
+  //   cy = y
+  //   jointCount += 1
+  // } while (length < wormLength && jointCount < joints.length)
+  //
+  // if (jointCount < joints.length) {
+  //   game.joints = joints.slice(0, jointCount - 1)
+  // }
 
   game.head = [nx, ny]
   return (nx >= reach)
