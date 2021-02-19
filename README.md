@@ -4,6 +4,7 @@ Matikka-mato peli
 
 *Under development*
 
+Current version running at https://jarppe.github.io/matikka-mato/
 
 ## Development
 
