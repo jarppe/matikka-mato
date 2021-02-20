@@ -70,11 +70,13 @@ const checkTest = (ts: number) => {
   if (!test) return
   const options  = test.options,
         dist     = distancer(worm[0]),
-        optIndex = options.findIndex(({ position }) => dist(position) < wormWidth),
+        margin   = wormWidth * 1.5,
+        optIndex = options.findIndex(({ position }) => dist(position) < margin),
         opt      = options[optIndex]
   if (opt) {
     if (opt.correct) {
       sound.chaching()
+      game.points += 1
       game.test = makeTest(ts)
     } else {
       sound.squeak()

@@ -48,6 +48,13 @@ const drawWorm = () => {
 
 const PI2 = 2.0 * Math.PI
 
+
+const textWidth = (text: string): number => ctx.measureText(text).width
+
+
+const drawCenterText = (x: number, y: number, text: string) => ctx.fillText(text, x - (textWidth(text) * 0.5), y)
+
+
 const drawTest = () => {
   const { test, wormWidth, width } = game
   if (!test) return
@@ -56,11 +63,9 @@ const drawTest = () => {
 
   ctx.font = (wormWidth * 0.6).toFixed(1) + "px PressStart"
   ctx.textBaseline = "middle"
-  ctx.fillStyle = game.state === "run" ? "#ffffff" : "#777777"
-  ctx.strokeStyle = game.state === "run" ? "#ffffff" : "#777777"
 
-  const offX = ctx.measureText(test.question).width
-  ctx.fillText(test.question, (width - offX) * 0.5, wormWidth)
+  ctx.fillStyle = game.state === "run" ? "#ffffff" : "#777777"
+  drawCenterText(width * 0.5, wormWidth, test.question)
 
   ctx.fillStyle = game.state === "run" ? "#ffffff" : "#777777"
   ctx.strokeStyle = game.state === "run" ? "#ffffff" : "#777777"
@@ -78,13 +83,28 @@ const drawTest = () => {
 }
 
 
+const drawScore = () => {
+  const { wormWidth, points } = game
+
+  ctx.save()
+
+  ctx.font = (wormWidth * 0.6).toFixed(1) + "px PressStart"
+  ctx.textBaseline = "middle"
+
+  ctx.fillStyle = game.state === "run" ? "#50ff50" : "#207720"
+  ctx.fillText("points: " + points, wormWidth, wormWidth)
+
+  ctx.restore()
+}
+
+
+
 const drawState = (stateText: string) => {
   ctx.save()
   ctx.font = "32px PressStart"
   ctx.textBaseline = "hanging"
   ctx.fillStyle = "rgba(192, 192, 192, 192)"
-  const textWidth = ctx.measureText(stateText).width
-  ctx.fillText(stateText, (game.width - textWidth) / 2, game.height / 2)
+  drawCenterText(game.width * 0.5, game.height / 2, stateText)
   ctx.restore()
 }
 
@@ -93,6 +113,7 @@ export const draw = () => {
   const { width, height, state } = game
   ctx.clearRect(0, 0, width, height)
   drawWorm()
+  drawScore()
   switch (state) {
     case "run":
       drawTest()

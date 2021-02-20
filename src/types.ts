@@ -27,5 +27,7 @@ export type Game = {
   worm: Point[]
   heading: Heading
   speed: number
-  test: Test | null
+  test: Test | null,
+  points: number,
+  level: number,
 }

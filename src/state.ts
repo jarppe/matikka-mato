@@ -1,5 +1,6 @@
 import { Game, Point } from "./types"
 
+
 let debug: boolean = window.location.search.indexOf("debug") > 0
 
 export const isDebug = () => debug
@@ -27,4 +28,6 @@ export const game: Game = {
   heading:       0,
   speed:         0,
   test:          null,
+  points:        0,
+  level:         0,
 }

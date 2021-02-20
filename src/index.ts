@@ -14,6 +14,8 @@ const initGame = () => {
   game.heading = 0
   game.speed = 1.5
   game.test = test.makeTest(Date.now())
+  game.points = 0
+  game.level = 0
 }
 
 
@@ -41,7 +43,8 @@ const TURN_LEFT  = -1,
       TURN_RIGHT = 1
 
 
-document.addEventListener("keydown", ({ code }) => {
+document.addEventListener("keydown", ({ code, repeat }) => {
+  if (repeat) return
   switch (code) {
     case "ArrowRight":
       return turn(TURN_RIGHT)
@@ -52,7 +55,7 @@ document.addEventListener("keydown", ({ code }) => {
     case "KeyD":
       return toggleDebug()
     default:
-      console.log(`key: ${ code }`)
+      console.log(`key: ${ code } (${ repeat })`)
   }
 })
 
