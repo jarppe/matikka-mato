@@ -78,10 +78,13 @@ const resize = () => {
 window.addEventListener("resize", resize)
 resize()
 
+
 canvas.addEventListener("touchstart", e => {
   const { state, width } = game,
         b1               = width * 0.3,
         b2               = width * 0.7
+
+  e.preventDefault()
 
   if (state === "run") {
     const touch = e.touches[0],
@@ -89,8 +92,10 @@ canvas.addEventListener("touchstart", e => {
     if (x < b1) return turn(TURN_LEFT)
     if (x > b2) return turn(TURN_RIGHT)
   }
+
   return action[state]()
 })
+
 
 const run = (ts: number) => {
   if (game.state === "run") move(ts)
