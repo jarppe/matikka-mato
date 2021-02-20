@@ -4,6 +4,7 @@ export type State = "run" | "paused" | "game-over"
 
 export type Option = {
   name: string
+  correct: boolean
   position: Point
 }
 
@@ -26,5 +27,5 @@ export type Game = {
   worm: Point[]
   heading: Heading
   speed: number
-  test: Test | null
+  test: Test
 }

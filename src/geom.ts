@@ -1,7 +1,14 @@
 import { Point, Line } from "./types"
 
 
-export const distance = (line: Line, e: Point): number => {
+export const distancer = ({ x: ax, y: ay }: Point) => ({ x: bx, y: by }: Point): number => {
+  const dx = ax - bx,
+        dy = ay - by
+  return Math.sqrt((dx * dx) + (dy * dy))
+}
+
+
+export const distanceToLine = (line: Line, e: Point): number => {
   const [a, b]    = line,
         ab: Point = { x: b.x - a.x, y: b.y - a.y },
         be: Point = { x: e.x - b.x, y: e.y - b.y },
