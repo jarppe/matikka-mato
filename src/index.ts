@@ -1,5 +1,6 @@
-import { Point, Line, State } from "./types"
+import { Game, Point, Heading, State, Test } from "./types"
 import { distance, intersect } from "./geom"
+import { crash } from "./sounds"
 
 
 let DEBUG: boolean = window.location.search.indexOf("debug") > 0
@@ -16,15 +17,16 @@ const HEADING: Point[] = [
 ]
 
 
-const game = {
-  state:         "paused" as State,
+const game: Game = {
+  state:         "paused",
   width:         0,
   height:        0,
   wormWidth:     0,
   maxWormLength: 0,
-  worm:          [] as Point[],
+  worm:          [],
   heading:       0,
   speed:         0,
+  test:          null,
 }
 
 
@@ -34,6 +36,7 @@ const initGame = () => {
   game.worm = [{ x: 200, y: 200 }, { x: 200, y: 200 }]
   game.heading = 1
   game.speed = 1.5
+  game.test = null
 }
 
 
@@ -67,7 +70,7 @@ const drawWorm = () => {
   ctx.lineJoin = "round"
   ctx.lineCap = "round"
   ctx.lineWidth = game.wormWidth
-  ctx.strokeStyle = "#ff00ff"
+  ctx.strokeStyle = game.state === "run" ? "#ff00ff" : "#770077"
 
   ctx.beginPath()
   const worm = game.worm
@@ -82,14 +85,33 @@ const drawWorm = () => {
 }
 
 
+const drawState = (stateText: string) => {
+  ctx.save()
+  ctx.font = "32px PressStart"
+  ctx.textBaseline = "hanging"
+  ctx.fillStyle = "rgba(192, 192, 192, 192)"
+  const textWidth = ctx.measureText(stateText).width
+  ctx.fillText(stateText, (game.width - textWidth) / 2, game.height / 2)
+  ctx.restore()
+}
+
 const draw = () => {
-  ctx.clearRect(0, 0, game.width, game.height)
+  const { width, height, state } = game
+  ctx.clearRect(0, 0, width, height)
   drawWorm()
+  switch (state) {
+    case "paused":
+      drawState("paused")
+      break
+    case "game-over":
+      drawState("game over")
+      break
+  }
   if (DEBUG) drawDebugInfo()
 }
 
 
-const move = () => {
+const moveWorm = () => {
   const worm      = game.worm,
         heading   = HEADING[game.heading],
         speed     = game.speed,
@@ -108,6 +130,7 @@ const move = () => {
 
   // Hit border wall?
   if ((nx < reach) || (nx > game.width - reach) || (ny < reach) || (ny > game.height - reach)) {
+    crash()
     game.state = "game-over"
     return
   }
@@ -116,13 +139,14 @@ const move = () => {
   const [a1, a2] = worm,
         a0       = {
           x: a1.x + (heading.x * wormWidth),
-          y: a1.y + (heading.y * wormWidth ),
+          y: a1.y + (heading.y * wormWidth),
         },
         cross    = intersect(a0, a2)
   for (let i = 3; i < worm.length; i++) {
     const b1 = worm[i - 1],
           b2 = worm[i]
     if (cross(b1, b2)) {
+      crash()
       game.state = "game-over"
       return
     }
@@ -148,11 +172,51 @@ const move = () => {
 }
 
 
-export const run = () => {
-  if (game.state === "run") move()
-  draw()
-  window.requestAnimationFrame(run)
+const move = (ts: number) => {
+  moveWorm()
+
 }
+
+
+const applyDirection = (heading: Heading, direction: -1 | 1): Heading => {
+  const nextHeading = heading + direction
+  return ((nextHeading < 0) ? 3 : (nextHeading > 3) ? 0 : nextHeading) as Heading
+}
+
+
+const turn = (direction: -1 | 1) => {
+  if (game.state !== "run") return
+  game.heading = applyDirection(game.heading, direction)
+  game.worm.unshift({ ...game.worm[0] })
+}
+
+
+const action: { [state in State]: () => void } = {
+  "run":       () => game.state = "paused",
+  "paused":    () => game.state = "run",
+  "game-over": () => initGame(),
+}
+
+
+const TURN_LEFT = -1,
+      TURN_RIGHT = 1
+
+
+document.addEventListener("keydown", ({ code }) => {
+  switch (code) {
+    case "ArrowRight":
+      return turn(TURN_RIGHT)
+    case "ArrowLeft":
+      return turn(TURN_LEFT)
+    case "Space":
+      return action[game.state]()
+    case "KeyD":
+      DEBUG = !DEBUG
+      return
+    default:
+      console.log(`key: ${ code }`)
+  }
+})
 
 
 const resize = () => {
@@ -174,36 +238,12 @@ window.addEventListener("resize", resize)
 resize()
 
 
-const turn = (direction: number) => {
-  if (game.state !== "run") return
-  const heading     = game.heading,
-        nextHeading = heading + direction
-  game.heading = (nextHeading < 0) ? 3 : (nextHeading > 3) ? 0 : nextHeading
-  game.worm.unshift({ ...game.worm[0] })
+const run = (ts: number) => {
+  if (game.state === "run") move(ts)
+  draw()
+  window.requestAnimationFrame(run)
 }
-
-
-const action: { [state in State]: () => void } = {
-  "run":       () => game.state = "paused",
-  "paused":    () => game.state = "run",
-  "game-over": () => initGame(),
-}
-
-
-document.addEventListener("keydown", ({ code }) => {
-  if (code === "ArrowRight") {
-    turn(1)
-  } else if (code === "ArrowLeft") {
-    turn(-1)
-  } else if (code === "Space") {
-    action[game.state]()
-  } else if (code === "KeyD") {
-    DEBUG = !DEBUG
-  } else {
-    console.log(`key: ${ code }`)
-  }
-})
 
 
 initGame()
-run()
+run(Date.now())

@@ -3,6 +3,14 @@
 }
 
 
+@font-face {
+  font-family:  "PressStart";
+  font-style:   normal;
+  font-weight:  400;
+  src:          url(fonts/PressStart2P-Regular.ttf) format("truetype");
+}
+
+
 html, body {
   width:      100%;
   height:     100%;
@@ -13,8 +21,8 @@ html, body {
 
 
 #canvas {
-  width:  calc(100% - 40px);
-  height: calc((100vw - 40px) * 0.5625);
-  margin: 20px 20px;
+  width:  calc(100% - 24px);
+  height: calc(100% - 24px);
+  margin: 10px 10px;
   border: 2px aquamarine solid;
 }
