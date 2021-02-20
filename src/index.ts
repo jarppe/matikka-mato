@@ -1,55 +1,47 @@
+import { Point, Line, State } from "./types"
+import { distance, intersect } from "./geom"
+
+
 let DEBUG: boolean = window.location.search.indexOf("debug") > 0
+
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
 
 
-type Point = { x: number, y: number }
-
-
-type State = "run" | "paused" | "end"
-
-
 const HEADING: Point[] = [
-        { x: 0, y: -1 }, // Up
-        { x: +1, y: 0 }, // Right
-        { x: 0, y: +1 }, // Down
-        { x: -1, y: 0 }, // Left
-      ]
+  { x: 0, y: -1 }, // Up
+  { x: +1, y: 0 }, // Right
+  { x: 0, y: +1 }, // Down
+  { x: -1, y: 0 }, // Left
+]
 
 
-type Game = {
-  state: State,
-  width: number,
-  height: number,
-  wormWidth: number,
-  maxWormLength: number,
-  worm: Point[],
-  heading: number,
-}
-
-
-const game: Game = {
-  state:         "paused",
+const game = {
+  state:         "paused" as State,
   width:         0,
   height:        0,
   wormWidth:     0,
   maxWormLength: 0,
-  worm:          [],
+  worm:          [] as Point[],
   heading:       0,
+  speed:         0,
 }
 
 
 const initGame = () => {
   game.state = "run"
-  game.maxWormLength = 100
+  game.maxWormLength = 300
   game.worm = [{ x: 200, y: 200 }, { x: 200, y: 200 }]
   game.heading = 1
+  game.speed = 1.5
 }
 
 
 const drawDebugInfo = () => {
   const debugData = [
     `state:    ${ game.state }`,
+    `speed:    ${ game.speed }`,
+    `length:   ${ game.maxWormLength }`,
     ...(game.worm.map(({ x, y }, i) => `${ i === 0 ? "worm:    " : "         " } [${ i }] ${ x.toFixed(0) } : ${ y.toFixed(0) }`)),
   ]
 
@@ -70,9 +62,7 @@ const drawDebugInfo = () => {
 }
 
 
-const draw = () => {
-  ctx.clearRect(0, 0, game.width, game.height)
-
+const drawWorm = () => {
   ctx.save()
   ctx.lineJoin = "round"
   ctx.lineCap = "round"
@@ -85,35 +75,60 @@ const draw = () => {
   if (head) ctx.moveTo(head.x, head.y)
   for (let i = 1; i < worm.length; i++) {
     const { x, y } = worm[i]
-    ctx.lineTo(x,y)
+    ctx.lineTo(x, y)
   }
   ctx.stroke()
   ctx.restore()
+}
 
+
+const draw = () => {
+  ctx.clearRect(0, 0, game.width, game.height)
+  drawWorm()
   if (DEBUG) drawDebugInfo()
 }
 
 
 const move = () => {
-  const worm     = game.worm,
-        heading  = HEADING[game.heading],
-        head     = worm[0],
-        { x, y } = head,
-        reach    = game.wormWidth / 2,
-        maxLen   = game.maxWormLength
+  const worm      = game.worm,
+        heading   = HEADING[game.heading],
+        speed     = game.speed,
+        head      = worm[0],
+        { x, y }  = head,
+        wormWidth = game.wormWidth,
+        reach     = wormWidth / 2,
+        maxLen    = game.maxWormLength
 
   let len = 0,
-      nx  = x + heading.x,
-      ny  = y + heading.y
+      nx  = x + (heading.x * speed),
+      ny  = y + (heading.y * speed)
 
   head.x = nx
   head.y = ny
 
+  // Hit border wall?
   if ((nx < reach) || (nx > game.width - reach) || (ny < reach) || (ny > game.height - reach)) {
-    game.state = "end"
+    game.state = "game-over"
     return
   }
 
+  // Run onto itself?
+  const [a1, a2] = worm,
+        a0       = {
+          x: a1.x + (heading.x * wormWidth),
+          y: a1.y + (heading.y * wormWidth ),
+        },
+        cross    = intersect(a0, a2)
+  for (let i = 3; i < worm.length; i++) {
+    const b1 = worm[i - 1],
+          b2 = worm[i]
+    if (cross(b1, b2)) {
+      game.state = "game-over"
+      return
+    }
+  }
+
+  // Keep max-len under limit:
   for (let i = 1; i < worm.length; i++) {
     const last     = worm[i],
           { x, y } = last,
@@ -169,9 +184,9 @@ const turn = (direction: number) => {
 
 
 const action: { [state in State]: () => void } = {
-  "run":    () => game.state = "paused",
-  "paused": () => game.state = "run",
-  "end":    () => initGame(),
+  "run":       () => game.state = "paused",
+  "paused":    () => game.state = "run",
+  "game-over": () => initGame(),
 }
 
 
