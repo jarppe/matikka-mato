@@ -9,21 +9,12 @@ type Point = { x: number, y: number }
 type State = "run" | "paused" | "end"
 
 
-const GAME_WIDTH       = 1000,
-      GAME_HEIGHT      = GAME_WIDTH * 0.5625,
-      WORM_WIDTH       = 20,
-      HEADING: Point[] = [
+const HEADING: Point[] = [
         { x: 0, y: -1 }, // Up
         { x: +1, y: 0 }, // Right
         { x: 0, y: +1 }, // Down
         { x: -1, y: 0 }, // Left
       ]
-
-
-const scaler = (fromMax: number, toMax: number) => {
-  const r = toMax / fromMax
-  return (x: number) => x * r
-}
 
 
 type Game = {
@@ -32,8 +23,6 @@ type Game = {
   height: number,
   wormWidth: number,
   maxWormLength: number,
-  scaleX: ReturnType<typeof scaler>,
-  scaleY: ReturnType<typeof scaler>,
   worm: Point[],
   heading: number,
 }
@@ -45,8 +34,6 @@ const game: Game = {
   height:        0,
   wormWidth:     0,
   maxWormLength: 0,
-  scaleX:        scaler(0, 0),
-  scaleY:        scaler(0, 0),
   worm:          [],
   heading:       0,
 }
@@ -87,7 +74,6 @@ const draw = () => {
   ctx.clearRect(0, 0, game.width, game.height)
 
   ctx.save()
-
   ctx.lineJoin = "round"
   ctx.lineCap = "round"
   ctx.lineWidth = game.wormWidth
@@ -96,16 +82,15 @@ const draw = () => {
   ctx.beginPath()
   const worm = game.worm
   const head = worm[0]
-  if (head) ctx.moveTo(game.scaleX(head.x), game.scaleX(head.y))
+  if (head) ctx.moveTo(head.x, head.y)
   for (let i = 1; i < worm.length; i++) {
     const { x, y } = worm[i]
-    ctx.lineTo(game.scaleX(x), game.scaleY(y))
+    ctx.lineTo(x,y)
   }
   ctx.stroke()
+  ctx.restore()
 
   if (DEBUG) drawDebugInfo()
-
-  ctx.restore()
 }
 
 
@@ -114,7 +99,7 @@ const move = () => {
         heading  = HEADING[game.heading],
         head     = worm[0],
         { x, y } = head,
-        reach    = game.wormWidth * 0.4,
+        reach    = game.wormWidth / 2,
         maxLen   = game.maxWormLength
 
   let len = 0,
@@ -124,7 +109,7 @@ const move = () => {
   head.x = nx
   head.y = ny
 
-  if ((nx < reach) || (nx > GAME_WIDTH - reach) || (ny < reach) || (ny > GAME_HEIGHT - reach)) {
+  if ((nx < reach) || (nx > game.width - reach) || (ny < reach) || (ny > game.height - reach)) {
     game.state = "end"
     return
   }
@@ -164,9 +149,7 @@ const resize = () => {
 
   game.width = width
   game.height = height
-  game.scaleX = scaler(GAME_WIDTH, width)
-  game.scaleY = scaler(GAME_HEIGHT, height)
-  game.wormWidth = game.scaleX(WORM_WIDTH)
+  game.wormWidth = width * 0.02
 
   if (game.state !== "run") draw()
 }
