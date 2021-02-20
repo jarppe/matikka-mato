@@ -2,16 +2,22 @@
 <html lang="fi">
   <head>
     <meta charset="utf-8"/>
-    <title>Matikka-mato</title>
+    <title>Matikka-Mato</title>
+    <link rel="stylesheet" href="styles.css"/>
+    <script src="app.js" defer></script>
+    <link rel="preload" href="sounds/crash.mp3" as="audio"/>
     <meta name="description" content="Matikka-mato"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="theme-color" content="#323232"/>
     <link rel="icon" href="favicon.ico"/>
     <link rel="apple-touch-icon" href="logo192.png"/>
     <link rel="manifest" href="manifest.json"/>
-    <link rel="stylesheet" href="styles.css"/>
-    <script src="app.js" defer></script>
-    <link rel="preload" href="sounds/crash.mp3" as="audio"/>
+    <meta property="og:title" content="Matikka-Mato"/>
+    <meta property="og:site_name" content="Matikka-Mato peli">
+    <meta property="og:description" content="Pieni peli matematiikan haroitteluun"/>
+    <meta property="og:url" content="https://jarppe.github.io/matikka-mato/"/>
+    <!-- TODO meta property="og:image" content="https://jarppe.github.io/matikka-mato/thumbnail.jpg" 1200×630 use 1.91:1 ratio -->
+    <meta name="twitter:site" content="@jarppe">
   </head>
   <body>
     <canvas id="canvas"></canvas>
