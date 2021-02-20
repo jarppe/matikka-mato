@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "tsc --outFile docs/index.js src/index.ts",
+    "build": "webpack --mode=production",
     "start": "webpack --mode=development --watch"
   },
   "dependencies": {

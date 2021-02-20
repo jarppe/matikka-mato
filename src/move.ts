@@ -1,6 +1,7 @@
 import { game, HEADING } from "./state"
 import * as sound from "./sounds"
 import { distancer, intersect } from "./geom"
+import { makeTest } from "./test"
 
 
 const moveWorm = () => {
@@ -64,19 +65,21 @@ const moveWorm = () => {
 }
 
 
-const checkTest = () => {
-  const { wormWidth, test, worm } = game,
-        options                   = test.options,
-        dist                      = distancer(worm[0]),
-        optIndex                  = options.findIndex(({ position }) => dist(position) < wormWidth),
-        opt                       = options[optIndex]
+const checkTest = (ts: number) => {
+  const { wormWidth, test, worm } = game
+  if (!test) return
+  const options  = test.options,
+        dist     = distancer(worm[0]),
+        optIndex = options.findIndex(({ position }) => dist(position) < wormWidth),
+        opt      = options[optIndex]
   if (opt) {
     if (opt.correct) {
-      console.log("CORRECT", optIndex, opt.name)
       sound.chaching()
+      game.test = makeTest(ts)
     } else {
-      console.log("WRONG", optIndex, opt.name)
       sound.squeak()
+      options.splice(optIndex, 1)
+      console.log("WRONG", optIndex, opt.name)
     }
   }
 }
@@ -84,7 +87,7 @@ const checkTest = () => {
 
 export const move = (ts: number) => {
   moveWorm()
-  checkTest()
+  checkTest(ts)
 }
 
 

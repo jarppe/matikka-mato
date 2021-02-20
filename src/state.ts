@@ -1,6 +1,4 @@
 import { Game, Point } from "./types"
-import * as test from "./test"
-
 
 let debug: boolean = window.location.search.indexOf("debug") > 0
 
@@ -28,5 +26,5 @@ export const game: Game = {
   worm:          [],
   heading:       0,
   speed:         0,
-  test:          test.makeTest(0),
+  test:          null,
 }

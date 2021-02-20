@@ -49,21 +49,31 @@ const drawWorm = () => {
 const PI2 = 2.0 * Math.PI
 
 const drawTest = () => {
-  const { test, wormWidth } = game
+  const { test, wormWidth, width } = game
+  if (!test) return
 
   ctx.save()
+
   ctx.font = (wormWidth * 0.6).toFixed(1) + "px PressStart"
   ctx.textBaseline = "middle"
   ctx.fillStyle = game.state === "run" ? "#ffffff" : "#777777"
   ctx.strokeStyle = game.state === "run" ? "#ffffff" : "#777777"
+
+  const offX = ctx.measureText(test.question).width
+  ctx.fillText(test.question, (width - offX) * 0.5, wormWidth)
+
+  ctx.fillStyle = game.state === "run" ? "#ffffff" : "#777777"
+  ctx.strokeStyle = game.state === "run" ? "#ffffff" : "#777777"
   ctx.lineWidth = 2
+
   test.options.forEach(({ name, position: { x, y } }) => {
-    const offX = ctx.measureText(name).width / 2.0
+    const offX = ctx.measureText(name).width * 0.5
     ctx.fillText(name, x - offX, y)
     ctx.beginPath()
     ctx.arc(x, y, game.wormWidth, 0, PI2, false)
     ctx.stroke()
   })
+
   ctx.restore()
 }
 

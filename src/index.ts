@@ -1,5 +1,4 @@
 import { Heading, State } from "./types"
-import * as sound from "./sounds"
 import * as test from "./test"
 import { canvas, toggleDebug, game } from "./state"
 import { draw } from "./draw"
