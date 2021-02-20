@@ -3,7 +3,7 @@ const canvas = document.getElementById("canvas") as HTMLCanvasElement
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
 
 
-type Point = [number, number]
+type Point = { x: number, y: number }
 
 
 type State = "run" | "paused" | "end"
@@ -13,10 +13,10 @@ const GAME_WIDTH       = 1000,
       GAME_HEIGHT      = GAME_WIDTH * 0.5625,
       WORM_WIDTH       = 20,
       HEADING: Point[] = [
-        [0, -1], // Up
-        [+1, 0], // Right
-        [0, +1], // Down
-        [-1, 0], // Left
+        { x: 0, y: -1 }, // Up
+        { x: +1, y: 0 }, // Right
+        { x: 0, y: +1 }, // Down
+        { x: -1, y: 0 }, // Left
       ]
 
 
@@ -55,7 +55,7 @@ const game: Game = {
 const initGame = () => {
   game.state = "run"
   game.maxWormLength = 100
-  game.worm = [[200, 200], [200, 200]]
+  game.worm = [{ x: 200, y: 200 }, { x: 200, y: 200 }]
   game.heading = 1
 }
 
@@ -63,7 +63,7 @@ const initGame = () => {
 const drawDebugInfo = () => {
   const debugData = [
     `state:    ${ game.state }`,
-    ...(game.worm.map(([x, y], i) => `${ i === 0 ? "worm:    " : "         " } [${ i }] ${ x.toFixed(0) } : ${ y.toFixed(0) }`)),
+    ...(game.worm.map(({ x, y }, i) => `${ i === 0 ? "worm:    " : "         " } [${ i }] ${ x.toFixed(0) } : ${ y.toFixed(0) }`)),
   ]
 
   const lineHeight = 18
@@ -96,9 +96,9 @@ const draw = () => {
   ctx.beginPath()
   const worm = game.worm
   const head = worm[0]
-  if (head) ctx.moveTo(game.scaleX(head[0]), game.scaleX(head[1]))
+  if (head) ctx.moveTo(game.scaleX(head.x), game.scaleX(head.y))
   for (let i = 1; i < worm.length; i++) {
-    const [x, y] = worm[i]
+    const { x, y } = worm[i]
     ctx.lineTo(game.scaleX(x), game.scaleY(y))
   }
   ctx.stroke()
@@ -111,18 +111,18 @@ const draw = () => {
 
 const move = () => {
   const worm     = game.worm,
+        heading  = HEADING[game.heading],
         head     = worm[0],
-        [dx, dy] = HEADING[game.heading],
-        [x, y]   = head,
+        { x, y } = head,
         reach    = game.wormWidth * 0.4,
         maxLen   = game.maxWormLength
 
   let len = 0,
-      nx  = x + dx,
-      ny  = y + dy
+      nx  = x + heading.x,
+      ny  = y + heading.y
 
-  head[0] = nx
-  head[1] = ny
+  head.x = nx
+  head.y = ny
 
   if ((nx < reach) || (nx > GAME_WIDTH - reach) || (ny < reach) || (ny > GAME_HEIGHT - reach)) {
     game.state = "end"
@@ -130,15 +130,15 @@ const move = () => {
   }
 
   for (let i = 1; i < worm.length; i++) {
-    const last   = worm[i],
-          [x, y] = last,
-          dx     = nx - x,
-          dy     = ny - y
+    const last     = worm[i],
+          { x, y } = last,
+          dx       = nx - x,
+          dy       = ny - y
     len += Math.abs(dx) + Math.abs(dy)
     if (len > maxLen) {
       const over = maxLen - len
-      if (dx !== 0) last[0] += over * (dx > 0 ? -1 : +1)
-      if (dy !== 0) last[1] += over * (dy > 0 ? -1 : +1)
+      if (dx !== 0) last.x += over * (dx > 0 ? -1 : +1)
+      if (dy !== 0) last.y += over * (dy > 0 ? -1 : +1)
       worm.splice(i + 1)
       break
     }
@@ -181,7 +181,7 @@ const turn = (direction: number) => {
   const heading     = game.heading,
         nextHeading = heading + direction
   game.heading = (nextHeading < 0) ? 3 : (nextHeading > 3) ? 0 : nextHeading
-  game.worm.unshift([...game.worm[0]])
+  game.worm.unshift({ ...game.worm[0] })
 }
 
 
