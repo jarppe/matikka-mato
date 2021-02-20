@@ -10,7 +10,7 @@ const initGame = () => {
         y = game.height * 0.5
   game.state = "run"
   game.maxWormLength = 300
-  game.worm = [{ x, y  }, { x, y }]
+  game.worm = [{ x, y }, { x, y }]
   game.heading = 0
   game.speed = 1.5
   game.test = test.makeTest(Date.now())
@@ -78,6 +78,19 @@ const resize = () => {
 window.addEventListener("resize", resize)
 resize()
 
+canvas.addEventListener("touchstart", e => {
+  const { state, width } = game,
+        b1               = width * 0.3,
+        b2               = width * 0.7
+
+  if (state === "run") {
+    const touch = e.touches[0],
+          x     = touch?.clientX
+    if (x < b1) return turn(TURN_LEFT)
+    if (x > b2) return turn(TURN_RIGHT)
+  }
+  return action[state]()
+})
 
 const run = (ts: number) => {
   if (game.state === "run") move(ts)
