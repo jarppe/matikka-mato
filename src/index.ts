@@ -12,7 +12,7 @@ const initGame = () => {
   game.maxWormLength = 300
   game.worm = [{ x, y }, { x, y }]
   game.heading = 0
-  game.speed = 0.05
+  game.speed = 0.05 * (game.width / 1200)
   game.test = test.makeTest()
   game.points = 0
   game.level = 0
@@ -53,6 +53,8 @@ document.addEventListener("keydown", ({ code, repeat }) => {
       return turn(TURN_LEFT)
     case "Space":
       return action[game.state]()
+    case "Escape":
+      return initGame()
     case "KeyD":
       return toggleDebug()
     default:
