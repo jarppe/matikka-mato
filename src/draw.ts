@@ -207,6 +207,22 @@ const drawNewMobile = (ts: number) => {
 }
 
 
+const drawPauseControl = () => {
+  ctx.fillRect(-0.3, -0.6, 0.2, 1.2)
+  ctx.fillRect(0.1, -0.6, 0.2, 1.2)
+}
+
+
+const drawPlayControl = () => {
+  ctx.beginPath()
+  ctx.moveTo(-0.3, -0.5)
+  ctx.lineTo(0.6, 0)
+  ctx.lineTo(-0.3, 0.5)
+  ctx.closePath()
+  ctx.fill()
+}
+
+
 const drawControl = () => {
   const { r, x, y, selected } = control,
         fill = "rgba(255, 255, 255, 0.05)",
@@ -235,8 +251,12 @@ const drawControl = () => {
   ctx.fillStyle = fill
   ctx.strokeStyle = stroke
 
-  ctx.fillRect(-0.3, -0.6, 0.2, 1.2)
-  ctx.fillRect(0.1, -0.6, 0.2, 1.2)
+  if (game.state === "run") {
+    drawPauseControl()
+  } else {
+    drawPlayControl()
+  }
+
 
   ctx.restore()
 }

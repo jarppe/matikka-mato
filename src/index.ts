@@ -52,16 +52,6 @@ const pause = () => {
 }
 
 
-const togglePause = () => {
-  const { state } = game
-  if (state === "paused") {
-    run()
-  } else if (state === "run") {
-    pause()
-  }
-}
-
-
 const spaceKeyAction: { [state in State]: () => void } = {
   "new":       run,
   "run":       pause,
@@ -93,11 +83,16 @@ document.addEventListener("keydown", ({ code, repeat }) => {
 })
 
 
-const canvasClickAction: { [state in State]: () => void } = {
+const controlButtonAction: { [state in State]: () => void } = {
   "new":       run,
-  "run":       () => {},
-  "paused":    () => {},
+  "run":       pause,
+  "paused":    run,
   "game-over": initGame,
+}
+
+
+const controlButton = () => {
+  controlButtonAction[game.state]()
 }
 
 
@@ -111,7 +106,6 @@ const controlEvent = (tx: number, ty: number) => {
     control.tx = null
     control.ty = null
     control.selected = null
-    canvasClickAction[game.state]()
     return
   }
 
@@ -120,7 +114,7 @@ const controlEvent = (tx: number, ty: number) => {
 
   if ((Math.abs(cy) < pauseR) && (Math.abs(cx) < pauseR)) {
     control.selected = null
-    togglePause()
+    controlButton()
     return
   }
 
