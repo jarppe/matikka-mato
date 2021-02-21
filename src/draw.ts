@@ -1,15 +1,16 @@
-import { averageTd, ctx, game, isDebug } from "./state"
+import { averageTd, control, ctx, game, isDebug, isMobile } from "./state"
 
 
 const drawDebugInfo = () => {
   const debugData = [
     `state:    ${ game.state }`,
     `speed:    ${ game.speed.toFixed(3) }`,
-    `fps:      ${ (1000.0 / averageTd()).toFixed(1) }`,
-    `size:     ${ game.width } x ${ game.height }`,
-    `length:   ${ game.maxWormLength.toFixed(1) }`,
-    `worm-w:   ${ game.wormWidth.toFixed(1) }`,
+    `fps:      ${ (1000.0 / averageTd()).toFixed(0) }`,
+    `mobile:   ${ isMobile }`,
+    `scale:    ${ game.wormWidth.toFixed(1) }`,
+    `screen:   ${ game.width } x ${ game.height }`,
     `test-age: ${ ((game.test ? game.tick - game.test.created : 0) / 1000.0).toFixed(1) }`,
+    `length:   ${ game.maxWormLength.toFixed(1) }`,
     ...(game.worm.map(({ x, y }, i) => `${ i === 0 ? "worm:    " : "         " } [${ i }] ${ x.toFixed(0) } : ${ y.toFixed(0) }`)),
   ]
 
@@ -49,7 +50,10 @@ const drawWorm = () => {
   ctx.restore()
 }
 
-const PI2 = 2.0 * Math.PI
+const PI = Math.PI
+const PIx2 = PI * 2.0
+const PIp2 = PI * 0.5
+const PIp4 = PI * 0.25
 
 
 const textWidth = (text: string): number => ctx.measureText(text).width
@@ -79,7 +83,7 @@ const drawTest = () => {
     const offX = ctx.measureText(name).width * 0.5
     ctx.fillText(name, x - offX, y)
     ctx.beginPath()
-    ctx.arc(x, y, game.wormWidth, 0, PI2, false)
+    ctx.arc(x, y, game.wormWidth, 0, PIx2, false)
     ctx.stroke()
   })
 
@@ -92,7 +96,7 @@ const drawScore = () => {
 
   ctx.save()
 
-  ctx.font = (wormWidth * 0.6).toFixed(1) + "px PressStart"
+  ctx.font = (wormWidth * 1.2).toFixed(1) + "px PressStart"
   ctx.textBaseline = "middle"
 
   ctx.fillStyle = game.state === "run" ? "#50ff50" : "#207720"
@@ -104,8 +108,8 @@ const drawScore = () => {
 
 const drawPaused = (ts: number) => {
   const alpha = 1 - (Math.abs((ts % 2000) - 1000) / 1000),
-        x = game.width * 0.5,
-        yd = game.wormWidth * 1.6
+        x     = game.width * 0.5,
+        yd    = game.wormWidth * 1.6
   let y = game.height / 2 - (yd * 2)
   ctx.save()
   ctx.font = "32px PressStart"
@@ -122,11 +126,10 @@ const drawPaused = (ts: number) => {
 }
 
 
-
 const drawGameOver = (ts: number) => {
   const alpha = 1 - (Math.abs((ts % 2000) - 1000) / 1000),
-        x = game.width * 0.5,
-        yd = game.wormWidth * 1.8
+        x     = game.width * 0.5,
+        yd    = game.wormWidth * 1.8
   let y = game.height / 2 - (yd * 4)
   ctx.save()
   ctx.font = "32px PressStart"
@@ -149,10 +152,10 @@ const drawGameOver = (ts: number) => {
 }
 
 
-const drawNew = (ts: number) => {
+const drawNewDesktop = (ts: number) => {
   const alpha = 1 - (Math.abs((ts % 2000) - 1000) / 1000),
-        x = game.width * 0.5,
-        yd = game.wormWidth * 1.6
+        x     = game.width * 0.5,
+        yd    = game.wormWidth * 1.6
   let y = game.height / 2 - (yd * 6)
   ctx.save()
   ctx.textBaseline = "hanging"
@@ -166,36 +169,100 @@ const drawNew = (ts: number) => {
   ctx.font = "16px PressStart"
   drawCenterText(x, y, "ohjaa matoa oikean vastauksen luo")
   y += yd
+  drawCenterText(x, y, "älä törmaa seinään äläkä matoon")
   y += yd
-  drawCenterText(x, y, "mato kääntyy <- ja -> näppäimillä")
-  y += yd
-  drawCenterText(x, y, "tai hiirellä klikkaamalla ruudun")
-  y += yd
-  drawCenterText(x, y, "vasenta tai oikeaa puolta")
-  y += yd
+  drawCenterText(x, y, "mato kääntyy nuoli-näppäimillä")
   y += yd
   drawCenterText(x, y, "välilyönti aloittaa ja lopettaa tauon")
   y += yd
+  y += yd
+  drawCenterText(x, y, "aloita peli välilyönnillä")
+  ctx.restore()
+}
+
+
+const drawNewMobile = (ts: number) => {
+  const alpha = 1 - (Math.abs((ts % 2000) - 1000) / 1000),
+        x     = game.width * 0.5,
+        yd    = game.wormWidth * 1.6
+  let y = game.height / 2 - (yd * 6)
+  ctx.save()
+  ctx.textBaseline = "hanging"
+  ctx.font = "32px PressStart"
+  ctx.fillStyle = `rgba(127, 255, 127, ${ alpha })`
+  drawCenterText(x, y, "Matikka-Mato")
+  y += yd
+  y += yd
+  y += yd
+  ctx.fillStyle = `rgb(127, 255, 212)`
+  ctx.font = "16px PressStart"
+  drawCenterText(x, y, "ohjaa matoa oikean vastauksen luo")
+  y += yd
+  drawCenterText(x, y, "älä törmaa seinään äläkä matoon")
+  y += yd
+  y += yd
+  drawCenterText(x, y, "ohjaa matoa ohjaus näppäimillä")
   y += yd
   drawCenterText(x, y, "aloita välilyönnillä")
   ctx.restore()
 }
 
 
+const drawControl = () => {
+  const { r, x, y, selected } = control,
+        fill = "rgba(255, 255, 255, 0.05)",
+        stroke = "rgba(255, 255, 255, 0.1)",
+        selectedFill = "rgba(255, 255, 255, 0.7)",
+        selectedStroke = "rgba(255, 255, 255, 1)"
+
+  ctx.save()
+
+  const { tx, ty } = control
+  if (tx && ty) {
+    ctx.strokeStyle = "#ffffff"
+    ctx.beginPath()
+    ctx.arc(tx, ty, 10, 0, PIx2, false)
+    ctx.stroke()
+  }
+
+  ctx.translate(x, y)
+
+  for (let i = 0; i < 4; i++) {
+    ctx.fillStyle = i === selected ? selectedFill : fill
+    ctx.strokeStyle = i === selected ? selectedStroke : stroke
+    ctx.beginPath()
+    ctx.arc(0, 0, r, PI + PIp4, PIx2 - PIp4, false)
+    ctx.arc(0, 0, r * 0.3, PIx2 - PIp4, PI + PIp4, true)
+    ctx.closePath()
+    ctx.fill()
+    ctx.stroke()
+    ctx.rotate(PIp2)
+  }
+
+  ctx.restore()
+}
+
 
 export const draw = (ts: number) => {
   const { width, height, state } = game
   ctx.clearRect(0, 0, width, height)
-  drawWorm()
-  drawScore()
   switch (state) {
     case "new":
-      drawNew(ts)
+      if (isMobile) {
+        drawNewMobile(ts)
+        if (isMobile) drawControl()
+      } else {
+        drawNewDesktop(ts)
+      }
       break
     case "run":
+      drawWorm()
+      drawScore()
       drawTest()
+      if (isMobile) drawControl()
       break
     case "paused":
+      drawScore()
       drawPaused(ts)
       break
     case "game-over":

@@ -9,6 +9,7 @@ export const toggleDebug = () => debug = !debug
 
 export const canvas = document.getElementById("canvas") as HTMLCanvasElement
 export const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+export const isMobile = "ontouchstart" in document.documentElement
 
 
 export const HEADING: Point[] = [
@@ -45,3 +46,27 @@ export const addTd = (td: number) => {
 }
 
 export const averageTd = () => averageTdBuffer.reduce((a, b) => a + b, 0) / averageTdBufferLen
+
+
+export type Control = {
+  x: number
+  y: number
+  r: number
+  dx: number
+  dy: number
+  selected: number | null
+  tx: number | null
+  ty: number | null
+}
+
+
+export const control: Control = {
+  x:        0,
+  y:        0,
+  r:        0,
+  dx:       0,
+  dy:       0,
+  selected: null,
+  tx:       null,
+  ty:       null,
+}

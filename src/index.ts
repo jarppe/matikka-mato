@@ -1,6 +1,6 @@
 import { Heading, State } from "./types"
 import * as test from "./test"
-import { canvas, toggleDebug, game } from "./state"
+import { canvas, toggleDebug, game, control } from "./state"
 import { draw } from "./draw"
 import { move } from "./move"
 
@@ -12,7 +12,7 @@ const initGame = () => {
   game.maxWormLength = 300
   game.worm = [{ x, y }, { x, y }]
   game.heading = 0
-  game.speed = 0.05 * (game.width / 1200)
+  game.speed = 0.07 * (game.width / 1200)
   game.test = test.makeTest()
   game.points = 0
   game.level = 0
@@ -75,15 +75,24 @@ document.addEventListener("keydown", ({ code, repeat }) => {
 
 
 const resize = () => {
-  const width = canvas.clientWidth
-  const height = canvas.clientHeight
+  const width     = canvas.clientWidth,
+        height    = canvas.clientHeight,
+        cbr       = canvas.getBoundingClientRect(),
+        wormWidth = width * 0.02
 
   canvas.width = width
   canvas.height = height
 
   game.width = width
   game.height = height
-  game.wormWidth = width * 0.02
+  game.wormWidth = wormWidth
+
+  control.r = height * 0.2
+  control.x = width - control.r - wormWidth
+  control.y = height - control.r - wormWidth
+  control.dx = cbr.left + 4
+  control.dy = cbr.top + 4
+  control.selected = null
 }
 
 
@@ -91,21 +100,41 @@ window.addEventListener("resize", resize)
 resize()
 
 
-canvas.addEventListener("touchstart", e => {
-  const { state, width } = game,
-        b1               = width * 0.3,
-        b2               = width * 0.7
+const touch = (tx: number, ty: number) => {
+  const { x, y, r, dx, dy } = control
+  const cx = tx - x - dx,
+        cy = ty - y - dy
 
-  e.preventDefault()
-
-  if (state === "run") {
-    const touch = e.touches[0],
-          x     = touch?.clientX
-    if (x < b1) return turn(TURN_LEFT)
-    if (x > b2) return turn(TURN_RIGHT)
+  if ((Math.abs(cx) > r) || Math.abs(cy) > r) {
+    control.tx = null
+    control.ty = null
+    control.selected = null
+    return
   }
 
-  return action[state]()
+  control.tx = tx - dx
+  control.ty = ty - dy
+
+  if (Math.abs(cy) < Math.abs(cx)) {
+    control.selected = cx < 0 ? 3 : 1
+  } else {
+    control.selected = cy < 0 ? 0 : 2
+  }
+}
+
+
+canvas.addEventListener("touchstart", e => {
+  e.preventDefault()
+  const t = e.touches[0],
+        x = t?.clientX,
+        y = t?.clientY
+  if (x && y) touch(x, y)
+})
+
+
+canvas.addEventListener("mousemove", e => {
+  e.preventDefault()
+  touch(e.clientX, e.clientY)
 })
 
 

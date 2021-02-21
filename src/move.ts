@@ -69,7 +69,7 @@ const moveWorm = (td: number) => {
 const hitCorrect = (test: Test, option: Option, i: number) => {
   sound.chaching()
   game.points += 1
-  game.speed *= 1.10
+  game.speed *= 1.06
   game.maxWormLength *= 1.07
   game.test = makeTest()
   console.log("correct:", ((game.tick - test.created) / 1000.0).toFixed(1))
