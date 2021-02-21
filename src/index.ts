@@ -35,7 +35,10 @@ const turn = (direction: -1 | 1) => {
 
 const action: { [state in State]: () => void } = {
   "run":       () => game.state = "paused",
-  "paused":    () => game.state = "run",
+  "paused":    () => {
+    game.tick = 0
+    game.state = "run"
+  },
   "game-over": () => initGame(),
 }
 
@@ -73,8 +76,6 @@ const resize = () => {
   game.width = width
   game.height = height
   game.wormWidth = width * 0.02
-
-  if (game.state !== "run") draw()
 }
 
 
@@ -103,7 +104,7 @@ canvas.addEventListener("touchstart", e => {
 const run = (ts: number) => {
   if (game.tick === 0) game.tick = ts
   if (game.state === "run") move(ts)
-  draw()
+  draw(ts)
   window.requestAnimationFrame(run)
 }
 

@@ -2,7 +2,7 @@ import { addTd, game, HEADING } from "./state"
 import * as sound from "./sounds"
 import { distancer, intersect } from "./geom"
 import { makeTest } from "./test"
-import { Option } from "./types"
+import { Option, Test } from "./types"
 
 
 const moveWorm = (td: number) => {
@@ -66,16 +66,17 @@ const moveWorm = (td: number) => {
 }
 
 
-const hitCorrect = (option: Option, i: number) => {
+const hitCorrect = (test: Test, option: Option, i: number) => {
   sound.chaching()
   game.points += 1
-  game.speed *= 1.15
+  game.speed *= 1.10
   game.maxWormLength *= 1.07
   game.test = makeTest()
+  console.log("correct:", ((game.tick - test.created) / 1000.0).toFixed(1))
 }
 
 
-const hitWrong = (option: Option, i: number) => {
+const hitWrong = (test: Test, option: Option, i: number) => {
   sound.squeak()
   game.test?.options.splice(i, 1)
 }
@@ -91,9 +92,9 @@ const checkTest = (ts: number) => {
         option      = options[optIndex]
   if (option) {
     if (option.correct) {
-      hitCorrect(option, optIndex)
+      hitCorrect(test, option, optIndex)
     } else {
-      hitWrong(option, optIndex)
+      hitWrong(test, option, optIndex)
     }
   }
 }

@@ -4,11 +4,12 @@ import { averageTd, ctx, game, isDebug } from "./state"
 const drawDebugInfo = () => {
   const debugData = [
     `state:    ${ game.state }`,
-    `speed:    ${ game.speed }`,
-    `avg td:   ${ averageTd().toFixed(1) }`,
+    `speed:    ${ game.speed.toFixed(3) }`,
+    `fps:      ${ (1000.0 / averageTd()).toFixed(1) }`,
     `size:     ${ game.width } x ${ game.height }`,
-    `length:   ${ game.maxWormLength }`,
+    `length:   ${ game.maxWormLength.toFixed(1) }`,
     `worm-w:   ${ game.wormWidth.toFixed(1) }`,
+    `test-age: ${ ((game.test ? game.tick - game.test.created : 0) / 1000.0).toFixed(1) }`,
     ...(game.worm.map(({ x, y }, i) => `${ i === 0 ? "worm:    " : "         " } [${ i }] ${ x.toFixed(0) } : ${ y.toFixed(0) }`)),
   ]
 
@@ -101,17 +102,55 @@ const drawScore = () => {
 }
 
 
-const drawState = (stateText: string) => {
+const drawPaused = (ts: number) => {
+  const alpha = 1 - (Math.abs((ts % 2000) - 1000) / 1000),
+        x = game.width * 0.5,
+        yd = game.wormWidth * 1.6
+  let y = game.height / 2 - (yd * 2)
   ctx.save()
   ctx.font = "32px PressStart"
   ctx.textBaseline = "hanging"
-  ctx.fillStyle = "rgba(192, 192, 192, 192)"
-  drawCenterText(game.width * 0.5, game.height / 2, stateText)
+  ctx.fillStyle = `rgba(255, 255, 255, ${ alpha })`
+  drawCenterText(x, y, "paused")
+  y += yd
+  y += yd
+  ctx.font = "26px PressStart"
+  drawCenterText(x, y, "press space or click")
+  y += yd
+  drawCenterText(x, y, "to continue")
   ctx.restore()
 }
 
 
-export const draw = () => {
+
+const drawGameOver = (ts: number) => {
+  const alpha = 1 - (Math.abs((ts % 2000) - 1000) / 1000),
+        x = game.width * 0.5,
+        yd = game.wormWidth * 1.6
+  let y = game.height / 2 - (yd * 4)
+  ctx.save()
+  ctx.font = "32px PressStart"
+  ctx.textBaseline = "hanging"
+  ctx.fillStyle = `rgba(127, 255, 127, ${ alpha })`
+  drawCenterText(x, y, "game over")
+  y += yd
+  y += yd
+  ctx.fillStyle = `rgba(127, 255, 212, ${ alpha })`
+  ctx.font = "48px PressStart"
+  drawCenterText(x, y, `score ${ game.points }`)
+  y += yd
+  y += yd
+  ctx.fillStyle = `rgba(127, 255, 127, ${ alpha })`
+  ctx.font = "26px PressStart"
+  drawCenterText(x, y, "press space or click")
+  y += yd
+  drawCenterText(x, y, "for new game")
+  ctx.restore()
+}
+
+
+
+export const draw = (ts: number) => {
   const { width, height, state } = game
   ctx.clearRect(0, 0, width, height)
   drawWorm()
@@ -121,10 +160,10 @@ export const draw = () => {
       drawTest()
       break
     case "paused":
-      drawState("paused")
+      drawPaused(ts)
       break
     case "game-over":
-      drawState("game over")
+      drawGameOver(ts)
       break
   }
   if (isDebug()) drawDebugInfo()
