@@ -124,6 +124,7 @@ const controlEvent = (tx: number, ty: number) => {
 
 
 const touch = (e: TouchEvent) => {
+  e.preventDefault()
   const t = e.touches[0],
         x = t?.clientX,
         y = t?.clientY
@@ -132,7 +133,8 @@ const touch = (e: TouchEvent) => {
 
 canvas.addEventListener("touchstart", touch)
 canvas.addEventListener("touchmove", touch)
-canvas.addEventListener("touchend", () => {
+canvas.addEventListener("touchend", e => {
+  e.preventDefault()
   control.tx = null
   control.ty = null
   control.selected = null
