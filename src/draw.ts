@@ -223,7 +223,7 @@ const drawPlayControl = () => {
 }
 
 
-const drawControl = () => {
+const drawControlFunc = () => {
   const { r, x, y, selected } = control,
         fill = "rgba(255, 255, 255, 0.05)",
         stroke = "rgba(255, 255, 255, 0.1)",
@@ -257,9 +257,11 @@ const drawControl = () => {
     drawPlayControl()
   }
 
-
   ctx.restore()
 }
+
+
+const drawControl = isMobile ? drawControlFunc : () => {}
 
 
 export const draw = (ts: number) => {
@@ -269,7 +271,6 @@ export const draw = (ts: number) => {
     case "new":
       if (isMobile) {
         drawNewMobile(ts)
-        if (isMobile) drawControl()
       } else {
         drawNewDesktop(ts)
       }
@@ -278,17 +279,16 @@ export const draw = (ts: number) => {
       drawWorm()
       drawScore()
       drawTest()
-      if (isMobile) drawControl()
       break
     case "paused":
       drawScore()
       drawPaused(ts)
-      if (isMobile) drawControl()
       break
     case "game-over":
       drawGameOver(ts)
       break
   }
+  drawControl()
   if (isDebug()) drawDebugInfo()
 }
 
