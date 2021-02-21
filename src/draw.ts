@@ -126,7 +126,7 @@ const drawPaused = (ts: number) => {
 const drawGameOver = (ts: number) => {
   const alpha = 1 - (Math.abs((ts % 2000) - 1000) / 1000),
         x = game.width * 0.5,
-        yd = game.wormWidth * 1.6
+        yd = game.wormWidth * 1.8
   let y = game.height / 2 - (yd * 4)
   ctx.save()
   ctx.font = "32px PressStart"
@@ -149,6 +149,39 @@ const drawGameOver = (ts: number) => {
 }
 
 
+const drawNew = (ts: number) => {
+  const alpha = 1 - (Math.abs((ts % 2000) - 1000) / 1000),
+        x = game.width * 0.5,
+        yd = game.wormWidth * 1.6
+  let y = game.height / 2 - (yd * 6)
+  ctx.save()
+  ctx.textBaseline = "hanging"
+  ctx.font = "32px PressStart"
+  ctx.fillStyle = `rgba(127, 255, 127, ${ alpha })`
+  drawCenterText(x, y, "Matikka-Mato")
+  y += yd
+  y += yd
+  y += yd
+  ctx.fillStyle = `rgb(127, 255, 212)`
+  ctx.font = "16px PressStart"
+  drawCenterText(x, y, "ohjaa matoa oikean vastauksen luo")
+  y += yd
+  y += yd
+  drawCenterText(x, y, "mato kääntyy <- ja -> näppäimillä")
+  y += yd
+  drawCenterText(x, y, "tai hiirellä klikkaamalla ruudun")
+  y += yd
+  drawCenterText(x, y, "vasenta tai oikeaa puolta")
+  y += yd
+  y += yd
+  drawCenterText(x, y, "välilyönti aloittaa ja lopettaa tauon")
+  y += yd
+  y += yd
+  drawCenterText(x, y, "aloita välilyönnillä")
+  ctx.restore()
+}
+
+
 
 export const draw = (ts: number) => {
   const { width, height, state } = game
@@ -156,6 +189,9 @@ export const draw = (ts: number) => {
   drawWorm()
   drawScore()
   switch (state) {
+    case "new":
+      drawNew(ts)
+      break
     case "run":
       drawTest()
       break

@@ -8,7 +8,7 @@ import { move } from "./move"
 const initGame = () => {
   const x = game.width * 0.5,
         y = game.height * 0.5
-  game.state = "run"
+  game.state = "new"
   game.maxWormLength = 300
   game.worm = [{ x, y }, { x, y }]
   game.heading = 0
@@ -34,12 +34,20 @@ const turn = (direction: -1 | 1) => {
 
 
 const action: { [state in State]: () => void } = {
-  "run":       () => game.state = "paused",
+  "new":       () => {
+    game.tick = 0
+    game.state = "run"
+  },
+  "run":       () => {
+    game.state = "paused"
+  },
   "paused":    () => {
     game.tick = 0
     game.state = "run"
   },
-  "game-over": () => initGame(),
+  "game-over": () => {
+    initGame()
+  },
 }
 
 
