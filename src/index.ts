@@ -105,7 +105,7 @@ const controlEvent = (tx: number, ty: number) => {
   const { x, y, r, dx, dy } = control
   const cx     = tx - x - dx,
         cy     = ty - y - dy,
-        pauseR = r * 0.4
+        pauseR = r * 0.2
 
   if ((Math.abs(cx) > r) || Math.abs(cy) > r) {
     control.tx = null
