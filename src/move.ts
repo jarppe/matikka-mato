@@ -2,9 +2,10 @@ import { game, HEADING } from "./state"
 import * as sound from "./sounds"
 import { distancer, intersect } from "./geom"
 import { makeTest } from "./test"
+import { Option } from "./types"
 
 
-const moveWorm = () => {
+const moveWorm = (td: number) => {
   const worm      = game.worm,
         heading   = HEADING[game.heading],
         speed     = game.speed,
@@ -15,8 +16,8 @@ const moveWorm = () => {
         maxLen    = game.maxWormLength
 
   let len = 0,
-      nx  = x + (heading.x * speed),
-      ny  = y + (heading.y * speed)
+      nx  = x + (heading.x * speed * td),
+      ny  = y + (heading.y * speed * td)
 
   head.x = nx
   head.y = ny
@@ -65,6 +66,21 @@ const moveWorm = () => {
 }
 
 
+const hitCorrect = (option: Option, i: number) => {
+  sound.chaching()
+  game.points += 1
+  game.speed *= 1.15
+  game.maxWormLength *= 1.07
+  game.test = makeTest()
+}
+
+
+const hitWrong = (option: Option, i: number) => {
+  sound.squeak()
+  game.test?.options.splice(i, 1)
+}
+
+
 const checkTest = (ts: number) => {
   const { wormWidth, test, worm } = game
   if (!test) return
@@ -72,23 +88,22 @@ const checkTest = (ts: number) => {
         dist     = distancer(worm[0]),
         margin   = wormWidth * 1.5,
         optIndex = options.findIndex(({ position }) => dist(position) < margin),
-        opt      = options[optIndex]
-  if (opt) {
-    if (opt.correct) {
-      sound.chaching()
-      game.points += 1
-      game.test = makeTest(ts)
+        option      = options[optIndex]
+  if (option) {
+    if (option.correct) {
+      hitCorrect(option, optIndex)
     } else {
-      sound.squeak()
-      options.splice(optIndex, 1)
-      console.log("WRONG", optIndex, opt.name)
+      hitWrong(option, optIndex)
     }
   }
 }
 
 
 export const move = (ts: number) => {
-  moveWorm()
+  const td = ts - game.tick
+  game.tick = ts
+
+  moveWorm(td)
   checkTest(ts)
 }
 

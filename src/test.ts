@@ -37,7 +37,7 @@ const wrongNumberMaker = (correct: number) => (): number => {
 }
 
 
-export const makeTest = (now: number): Test => {
+export const makeTest = (): Test => {
   const options: Option[] = [],
         count             = 3 + Math.round(Math.random() * 3),
         randomPoint       = randomPointMaker(),
@@ -63,8 +63,7 @@ export const makeTest = (now: number): Test => {
   return {
     question: `${ a } + ${ b }`,
     answer:   `${ c }`,
-    started:  now,
-    timeout:  now + 30000,
+    created:  game.tick,
     options,
   }
 }

@@ -11,8 +11,7 @@ export type Option = {
 export type Test = {
   question: string
   answer: string
-  started: number
-  timeout: number
+  created: number
   options: Option[]
 }
 
@@ -30,4 +29,5 @@ export type Game = {
   test: Test | null,
   points: number,
   level: number,
+  tick: number,
 }

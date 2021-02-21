@@ -12,10 +12,11 @@ const initGame = () => {
   game.maxWormLength = 300
   game.worm = [{ x, y }, { x, y }]
   game.heading = 0
-  game.speed = 1.5
-  game.test = test.makeTest(Date.now())
+  game.speed = 0.05
+  game.test = test.makeTest()
   game.points = 0
   game.level = 0
+  game.tick = 0
 }
 
 
@@ -98,10 +99,11 @@ canvas.addEventListener("touchstart", e => {
 
 
 const run = (ts: number) => {
+  if (game.tick === 0) game.tick = ts
   if (game.state === "run") move(ts)
   draw()
   window.requestAnimationFrame(run)
 }
 
 initGame()
-run(Date.now())
+window.requestAnimationFrame(run)

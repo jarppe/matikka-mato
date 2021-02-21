@@ -11,7 +11,7 @@ const drawDebugInfo = () => {
   ]
 
   const lineHeight = 18
-  let y = 20
+  let y = 40
 
   ctx.save()
   ctx.font = "16px courier"

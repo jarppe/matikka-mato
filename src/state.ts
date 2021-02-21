@@ -30,4 +30,5 @@ export const game: Game = {
   test:          null,
   points:        0,
   level:         0,
+  tick:          0,
 }
