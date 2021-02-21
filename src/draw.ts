@@ -63,12 +63,13 @@ const drawTest = () => {
 
   ctx.save()
 
-  ctx.font = (wormWidth * 0.6).toFixed(1) + "px PressStart"
+  ctx.font = (wormWidth * 1.2).toFixed(1) + "px PressStart"
   ctx.textBaseline = "middle"
 
   ctx.fillStyle = game.state === "run" ? "#ffffff" : "#777777"
   drawCenterText(width * 0.5, wormWidth, test.question)
 
+  ctx.font = (wormWidth * 0.8).toFixed(1) + "px sans-serif"
   ctx.fillStyle = game.state === "run" ? "#ffffff" : "#777777"
   ctx.strokeStyle = game.state === "run" ? "#ffffff" : "#777777"
   ctx.lineWidth = 2
