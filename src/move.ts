@@ -1,4 +1,4 @@
-import { game, HEADING } from "./state"
+import { addTd, game, HEADING } from "./state"
 import * as sound from "./sounds"
 import { distancer, intersect } from "./geom"
 import { makeTest } from "./test"
@@ -102,6 +102,7 @@ const checkTest = (ts: number) => {
 export const move = (ts: number) => {
   const td = ts - game.tick
   game.tick = ts
+  addTd(td)
 
   moveWorm(td)
   checkTest(ts)

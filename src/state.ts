@@ -1,7 +1,8 @@
 import { Game, Point } from "./types"
 
 
-let debug: boolean = window.location.search.indexOf("debug") > 0
+let debug = new URLSearchParams(window.location.search).get("debug") === "true"
+
 
 export const isDebug = () => debug
 export const toggleDebug = () => debug = !debug
@@ -32,3 +33,15 @@ export const game: Game = {
   level:         0,
   tick:          0,
 }
+
+
+const averageTdBufferLen = 30
+const averageTdBuffer = new Array<number>(averageTdBufferLen)
+let averageTdBufferIndex = 0
+
+export const addTd = (td: number) => {
+  averageTdBuffer[averageTdBufferIndex++] = td
+  if (averageTdBufferIndex > averageTdBufferLen) averageTdBufferIndex = 0
+}
+
+export const averageTd = () => averageTdBuffer.reduce((a, b) => a + b, 0) / averageTdBufferLen

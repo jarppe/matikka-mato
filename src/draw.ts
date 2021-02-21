@@ -1,10 +1,12 @@
-import { ctx, game, isDebug } from "./state"
+import { averageTd, ctx, game, isDebug } from "./state"
 
 
 const drawDebugInfo = () => {
   const debugData = [
     `state:    ${ game.state }`,
     `speed:    ${ game.speed }`,
+    `avg td:   ${ averageTd().toFixed(1) }`,
+    `size:     ${ game.width } x ${ game.height }`,
     `length:   ${ game.maxWormLength }`,
     `worm-w:   ${ game.wormWidth.toFixed(1) }`,
     ...(game.worm.map(({ x, y }, i) => `${ i === 0 ? "worm:    " : "         " } [${ i }] ${ x.toFixed(0) } : ${ y.toFixed(0) }`)),
@@ -96,7 +98,6 @@ const drawScore = () => {
 
   ctx.restore()
 }
-
 
 
 const drawState = (stateText: string) => {
