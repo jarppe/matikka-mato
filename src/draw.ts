@@ -49,6 +49,7 @@ const drawWorm = () => {
   ctx.restore()
 }
 
+
 const PI = Math.PI
 const PIx2 = PI * 2.0
 const PIp2 = PI * 0.5
@@ -166,16 +167,14 @@ const drawNewDesktop = (ts: number) => {
   y += yd
   ctx.fillStyle = `rgb(127, 255, 212)`
   ctx.font = "16px PressStart"
-  drawCenterText(x, y, "ohjaa matoa oikean vastauksen luo")
+  drawCenterText(x, y, "Ohjaa mato oikean vastauksen luo.")
   y += yd
-  drawCenterText(x, y, "älä törmaa seinään äläkä matoon")
-  y += yd
-  drawCenterText(x, y, "mato kääntyy nuoli-näppäimillä")
-  y += yd
-  drawCenterText(x, y, "välilyönti aloittaa ja lopettaa tauon")
+  drawCenterText(x, y, "Älä törmaa seinään tai matoon.")
   y += yd
   y += yd
-  drawCenterText(x, y, "aloita peli välilyönnillä")
+  drawCenterText(x, y, "Ohjaa matoa nuoli-näppäimillä.")
+  y += yd
+  drawCenterText(x, y, "Aloita peli välilyönnillä.")
   ctx.restore()
 }
 
@@ -195,14 +194,14 @@ const drawNewMobile = (ts: number) => {
   y += yd
   ctx.fillStyle = `rgb(127, 255, 212)`
   ctx.font = "16px PressStart"
-  drawCenterText(x, y, "ohjaa matoa oikean vastauksen luo")
+  drawCenterText(x, y, "Ohjaa matoa oikean vastauksen luo.")
   y += yd
-  drawCenterText(x, y, "älä törmaa seinään äläkä matoon")
+  drawCenterText(x, y, "Älä törmaa seinään tai matoon.")
   y += yd
   y += yd
-  drawCenterText(x, y, "ohjaa matoa ohjaus näppäimillä")
+  drawCenterText(x, y, "Ohjaa matoa koskettamalla ohjainta.")
   y += yd
-  drawCenterText(x, y, "aloita välilyönnillä")
+  drawCenterText(x, y, "Aloita peli ohjaimen keskeltä.")
   ctx.restore()
 }
 
@@ -264,6 +263,22 @@ const drawControlFunc = () => {
 const drawControl = isMobile ? drawControlFunc : () => {}
 
 
+const drawMiscControls = () => {
+  const { width, height, wormWidth } = game
+
+  // Sound on/off
+  ctx.save()
+  ctx.fillStyle = "rgba(0, 255, 0, 0.5)"
+  ctx.translate(width - (wormWidth * 3), wormWidth)
+  ctx.fillRect(0, 0, wormWidth, wormWidth)
+  ctx.restore()
+
+  // Fullscreen
+  ctx.save()
+  ctx.restore()
+}
+
+
 export const draw = (ts: number) => {
   const { width, height, state } = game
   ctx.clearRect(0, 0, width, height)
@@ -274,6 +289,7 @@ export const draw = (ts: number) => {
       } else {
         drawNewDesktop(ts)
       }
+      drawMiscControls()
       break
     case "run":
       drawWorm()
@@ -285,6 +301,8 @@ export const draw = (ts: number) => {
       drawPaused(ts)
       break
     case "game-over":
+      drawWorm()
+      drawTest()
       drawGameOver(ts)
       break
   }
