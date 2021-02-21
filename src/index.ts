@@ -1,4 +1,4 @@
-import { Heading, State } from "./types"
+import { State, Heading, UP, RIGHT, DOWN, LEFT } from "./types"
 import * as test from "./test"
 import { canvas, toggleDebug, game, control } from "./state"
 import { draw } from "./draw"
@@ -20,16 +20,24 @@ const initGame = () => {
 }
 
 
-const applyDirection = (heading: Heading, direction: -1 | 1): Heading => {
-  const nextHeading = heading + direction
-  return ((nextHeading < 0) ? 3 : (nextHeading > 3) ? 0 : nextHeading) as Heading
-}
+const turnHeading: Heading[][] = [
+  /* ...Up: */ [UP, RIGHT, UP, LEFT],
+  /* Right: */ [UP, RIGHT, DOWN, RIGHT],
+  /* .Down: */ [DOWN, RIGHT, DOWN, LEFT],
+  /* .Left: */ [UP, LEFT, DOWN, LEFT],
+]
 
 
-const turn = (direction: -1 | 1) => {
-  if (game.state !== "run") return
-  game.heading = applyDirection(game.heading, direction)
-  game.worm.unshift({ ...game.worm[0] })
+const turn = (direction: Heading) => {
+  const { state, heading } = game
+
+  if (state !== "run") return
+
+  const newHeading = turnHeading[heading][direction]
+  if (newHeading !== heading) {
+    game.heading = newHeading
+    game.worm.unshift({ ...game.worm[0] })
+  }
 }
 
 
@@ -51,17 +59,17 @@ const action: { [state in State]: () => void } = {
 }
 
 
-const TURN_LEFT  = -1,
-      TURN_RIGHT = 1
-
-
 document.addEventListener("keydown", ({ code, repeat }) => {
   if (repeat) return
   switch (code) {
+    case "ArrowUp":
+      return turn(UP)
     case "ArrowRight":
-      return turn(TURN_RIGHT)
+      return turn(RIGHT)
+    case "ArrowDown":
+      return turn(DOWN)
     case "ArrowLeft":
-      return turn(TURN_LEFT)
+      return turn(LEFT)
     case "Space":
       return action[game.state]()
     case "Escape":
@@ -74,32 +82,6 @@ document.addEventListener("keydown", ({ code, repeat }) => {
 })
 
 
-const resize = () => {
-  const width     = canvas.clientWidth,
-        height    = canvas.clientHeight,
-        cbr       = canvas.getBoundingClientRect(),
-        wormWidth = width * 0.02
-
-  canvas.width = width
-  canvas.height = height
-
-  game.width = width
-  game.height = height
-  game.wormWidth = wormWidth
-
-  control.r = height * 0.2
-  control.x = width - control.r - wormWidth
-  control.y = height - control.r - wormWidth
-  control.dx = cbr.left + 4
-  control.dy = cbr.top + 4
-  control.selected = null
-}
-
-
-window.addEventListener("resize", resize)
-resize()
-
-
 const controlEvent = (tx: number, ty: number) => {
   const { x, y, r, dx, dy } = control
   const cx = tx - x - dx,
@@ -109,6 +91,7 @@ const controlEvent = (tx: number, ty: number) => {
     control.tx = null
     control.ty = null
     control.selected = null
+    action[game.state]()
     return
   }
 
@@ -120,6 +103,8 @@ const controlEvent = (tx: number, ty: number) => {
   } else {
     control.selected = cy < 0 ? 0 : 2
   }
+
+  turn(control.selected)
 }
 
 
@@ -156,6 +141,32 @@ canvas.addEventListener("mousedown", e => {
 canvas.addEventListener("mouseup", controlClear)
 canvas.addEventListener("mouseout", controlClear)
 canvas.addEventListener("mouseleave", controlClear)
+
+
+const resize = () => {
+  const width     = canvas.clientWidth,
+        height    = canvas.clientHeight,
+        cbr       = canvas.getBoundingClientRect(),
+        wormWidth = width * 0.02
+
+  canvas.width = width
+  canvas.height = height
+
+  game.width = width
+  game.height = height
+  game.wormWidth = wormWidth
+
+  control.r = height * 0.2
+  control.x = width - control.r - wormWidth
+  control.y = height - control.r - wormWidth
+  control.dx = cbr.left + 4
+  control.dy = cbr.top + 4
+  control.selected = null
+}
+
+
+window.addEventListener("resize", resize)
+resize()
 
 
 const run = (ts: number) => {

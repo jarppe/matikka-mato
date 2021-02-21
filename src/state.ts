@@ -1,4 +1,4 @@
-import { Game, Point } from "./types"
+import { Game, Heading, Point } from "./types"
 
 
 let debug = new URLSearchParams(window.location.search).get("debug") === "true"
@@ -10,9 +10,6 @@ export const toggleDebug = () => debug = !debug
 export const canvas = document.getElementById("canvas") as HTMLCanvasElement
 export const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
 export const isMobile = "ontouchstart" in document.documentElement
-
-
-export type Direction = 0 | 1 | 2 | 3
 
 
 export const HEADING: Point[] = [
@@ -45,7 +42,7 @@ export type Control = {
   r: number
   dx: number
   dy: number
-  selected: Direction | null
+  selected: Heading | null
   tx: number | null
   ty: number | null
 }

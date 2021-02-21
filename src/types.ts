@@ -15,7 +15,15 @@ export type Test = {
   options: Option[]
 }
 
+
 export type Heading = 0 | 1 | 2 | 3
+
+
+export const UP: Heading = 0
+export const RIGHT: Heading = 1
+export const DOWN: Heading = 2
+export const LEFT: Heading = 3
+
 
 export type Game = {
   state: State
