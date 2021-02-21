@@ -100,7 +100,7 @@ const drawScore = () => {
   ctx.textBaseline = "middle"
 
   ctx.fillStyle = game.state === "run" ? "#50ff50" : "#207720"
-  ctx.fillText("points: " + points, wormWidth, wormWidth)
+  ctx.fillText("Pisteet: " + points, wormWidth, wormWidth)
 
   ctx.restore()
 }
@@ -140,14 +140,20 @@ const drawGameOver = (ts: number) => {
   y += yd
   ctx.fillStyle = `rgba(127, 255, 212, ${ alpha })`
   ctx.font = "48px PressStart"
-  drawCenterText(x, y, `score ${ game.points }`)
+  drawCenterText(x, y, `Sait ${ game.points } pistettä`)
   y += yd
   y += yd
   ctx.fillStyle = `rgba(127, 255, 127, ${ alpha })`
   ctx.font = "26px PressStart"
-  drawCenterText(x, y, "press space or click")
-  y += yd
-  drawCenterText(x, y, "for new game")
+  if (isMobile) {
+    drawCenterText(x, y, "Aloita uusi peli painamalla")
+    y += yd
+    drawCenterText(x, y, "ohjaimen keskeltä.")
+  } else {
+    drawCenterText(x, y, "Aloita uusi peli painamalla")
+    y += yd
+    drawCenterText(x, y, "välilyöntiä.")
+  }
   ctx.restore()
 }
 
@@ -270,7 +276,7 @@ const drawMiscControls = () => {
   ctx.save()
   ctx.fillStyle = "rgba(0, 255, 0, 0.5)"
   ctx.translate(width - (wormWidth * 3), wormWidth)
-  ctx.fillRect(0, 0, wormWidth, wormWidth)
+  ctx.fillRect(0, 0, 2 * wormWidth, 2* wormWidth)
   ctx.restore()
 
   // Fullscreen

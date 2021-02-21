@@ -7,7 +7,7 @@ let debug = new URLSearchParams(window.location.search).get("debug") === "true"
 export const isDebug = () => debug
 export const toggleDebug = () => debug = !debug
 
-export const canvas = document.getElementById("canvas") as HTMLCanvasElement
+export const canvas = document.getElementById("game") as HTMLCanvasElement
 export const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
 export const isMobile = "ontouchstart" in document.documentElement
 

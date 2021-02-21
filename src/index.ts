@@ -60,22 +60,30 @@ const spaceKeyAction: { [state in State]: () => void } = {
 }
 
 
-document.addEventListener("keydown", ({ code, repeat }) => {
+document.addEventListener("keydown", (e) => {
+  const { code, repeat } = e
   if (repeat) return
   switch (code) {
     case "ArrowUp":
+      e.preventDefault()
       return turn(UP)
     case "ArrowRight":
+      e.preventDefault()
       return turn(RIGHT)
     case "ArrowDown":
+      e.preventDefault()
       return turn(DOWN)
     case "ArrowLeft":
+      e.preventDefault()
       return turn(LEFT)
     case "Space":
+      e.preventDefault()
       return spaceKeyAction[game.state]()
     case "Escape":
+      e.preventDefault()
       return initGame()
     case "KeyD":
+      e.preventDefault()
       return toggleDebug()
     default:
       console.log(`key: ${ code } (${ repeat })`)
@@ -186,7 +194,6 @@ const resize = () => {
 
 
 window.addEventListener("resize", resize)
-resize()
 
 
 const gameLoop = (ts: number) => {
@@ -196,5 +203,12 @@ const gameLoop = (ts: number) => {
   window.requestAnimationFrame(gameLoop)
 }
 
-initGame()
-window.requestAnimationFrame(gameLoop)
+
+const init = () => {
+  resize()
+  initGame()
+  window.requestAnimationFrame(gameLoop)
+}
+
+
+window.requestAnimationFrame(init)
