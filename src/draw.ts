@@ -1,11 +1,10 @@
-import { averageTd, control, ctx, game, isDebug, isMobile } from "./state"
+import { control, ctx, game, isDebug, isMobile } from "./state"
 
 
 const drawDebugInfo = () => {
   const debugData = [
     `state:    ${ game.state }`,
     `speed:    ${ game.speed.toFixed(3) }`,
-    `fps:      ${ (1000.0 / averageTd()).toFixed(0) }`,
     `mobile:   ${ isMobile }`,
     `scale:    ${ game.wormWidth.toFixed(1) }`,
     `screen:   ${ game.width } x ${ game.height }`,
@@ -216,14 +215,6 @@ const drawControl = () => {
         selectedStroke = "rgba(255, 255, 255, 1)"
 
   ctx.save()
-
-  const { tx, ty } = control
-  if (tx && ty) {
-    ctx.strokeStyle = "#ffffff"
-    ctx.beginPath()
-    ctx.arc(tx, ty, 10, 0, PIx2, false)
-    ctx.stroke()
-  }
 
   ctx.translate(x, y)
 

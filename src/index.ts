@@ -132,21 +132,30 @@ const touch = (e: TouchEvent) => {
   if (x && y) controlEvent(x, y)
 }
 
-canvas.addEventListener("touchstart", touch)
-canvas.addEventListener("touchmove", touch)
-canvas.addEventListener("touchend", e => {
+
+const controlClear = (e: TouchEvent | MouseEvent) => {
   e.preventDefault()
   e.stopPropagation()
   control.tx = null
   control.ty = null
   control.selected = null
-})
+}
 
 
-canvas.addEventListener("mousemove", e => {
+canvas.addEventListener("touchstart", touch)
+canvas.addEventListener("touchmove", touch)
+canvas.addEventListener("touchend", controlClear)
+
+
+canvas.addEventListener("mousedown", e => {
   e.preventDefault()
   controlEvent(e.clientX, e.clientY)
 })
+
+
+canvas.addEventListener("mouseup", controlClear)
+canvas.addEventListener("mouseout", controlClear)
+canvas.addEventListener("mouseleave", controlClear)
 
 
 const run = (ts: number) => {
