@@ -223,12 +223,20 @@ const drawControl = () => {
     ctx.strokeStyle = i === selected ? selectedStroke : stroke
     ctx.beginPath()
     ctx.arc(0, 0, r, PI + PIp4, PIx2 - PIp4, false)
-    ctx.arc(0, 0, r * 0.3, PIx2 - PIp4, PI + PIp4, true)
+    ctx.arc(0, 0, r * 0.4, PIx2 - PIp4, PI + PIp4, true)
     ctx.closePath()
     ctx.fill()
     ctx.stroke()
     ctx.rotate(PIp2)
   }
+
+  ctx.scale(r * 0.4, r * 0.4)
+
+  ctx.fillStyle = fill
+  ctx.strokeStyle = stroke
+
+  ctx.fillRect(-0.3, -0.6, 0.2, 1.2)
+  ctx.fillRect(0.1, -0.6, 0.2, 1.2)
 
   ctx.restore()
 }
@@ -255,6 +263,7 @@ export const draw = (ts: number) => {
     case "paused":
       drawScore()
       drawPaused(ts)
+      if (isMobile) drawControl()
       break
     case "game-over":
       drawGameOver(ts)

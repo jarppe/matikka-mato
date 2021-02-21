@@ -41,21 +41,32 @@ const turn = (direction: Heading) => {
 }
 
 
-const action: { [state in State]: () => void } = {
-  "new":       () => {
-    game.tick = 0
-    game.state = "run"
-  },
-  "run":       () => {
-    game.state = "paused"
-  },
-  "paused":    () => {
-    game.tick = 0
-    game.state = "run"
-  },
-  "game-over": () => {
-    initGame()
-  },
+const run = () => {
+  game.tick = 0
+  game.state = "run"
+}
+
+
+const pause = () => {
+  game.state = "paused"
+}
+
+
+const togglePause = () => {
+  const { state } = game
+  if (state === "paused") {
+    run()
+  } else if (state === "run") {
+    pause()
+  }
+}
+
+
+const spaceKeyAction: { [state in State]: () => void } = {
+  "new":       run,
+  "run":       pause,
+  "paused":    run,
+  "game-over": initGame,
 }
 
 
@@ -71,7 +82,7 @@ document.addEventListener("keydown", ({ code, repeat }) => {
     case "ArrowLeft":
       return turn(LEFT)
     case "Space":
-      return action[game.state]()
+      return spaceKeyAction[game.state]()
     case "Escape":
       return initGame()
     case "KeyD":
@@ -82,21 +93,36 @@ document.addEventListener("keydown", ({ code, repeat }) => {
 })
 
 
+const canvasClickAction: { [state in State]: () => void } = {
+  "new":       run,
+  "run":       () => {},
+  "paused":    () => {},
+  "game-over": initGame,
+}
+
+
 const controlEvent = (tx: number, ty: number) => {
   const { x, y, r, dx, dy } = control
-  const cx = tx - x - dx,
-        cy = ty - y - dy
+  const cx     = tx - x - dx,
+        cy     = ty - y - dy,
+        pauseR = r * 0.4
 
   if ((Math.abs(cx) > r) || Math.abs(cy) > r) {
     control.tx = null
     control.ty = null
     control.selected = null
-    action[game.state]()
+    canvasClickAction[game.state]()
     return
   }
 
   control.tx = tx - dx
   control.ty = ty - dy
+
+  if ((Math.abs(cy) < pauseR) && (Math.abs(cx) < pauseR)) {
+    control.selected = null
+    togglePause()
+    return
+  }
 
   if (Math.abs(cy) < Math.abs(cx)) {
     control.selected = cx < 0 ? 3 : 1
@@ -169,12 +195,12 @@ window.addEventListener("resize", resize)
 resize()
 
 
-const run = (ts: number) => {
+const gameLoop = (ts: number) => {
   if (game.tick === 0) game.tick = ts
   if (game.state === "run") move(ts)
   draw(ts)
-  window.requestAnimationFrame(run)
+  window.requestAnimationFrame(gameLoop)
 }
 
 initGame()
-window.requestAnimationFrame(run)
+window.requestAnimationFrame(gameLoop)
