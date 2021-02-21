@@ -100,7 +100,7 @@ window.addEventListener("resize", resize)
 resize()
 
 
-const touch = (tx: number, ty: number) => {
+const controlEvent = (tx: number, ty: number) => {
   const { x, y, r, dx, dy } = control
   const cx = tx - x - dx,
         cy = ty - y - dy
@@ -123,18 +123,25 @@ const touch = (tx: number, ty: number) => {
 }
 
 
-canvas.addEventListener("touchstart", e => {
-  e.preventDefault()
+const touch = (e: TouchEvent) => {
   const t = e.touches[0],
         x = t?.clientX,
         y = t?.clientY
-  if (x && y) touch(x, y)
+  if (x && y) controlEvent(x, y)
+}
+
+canvas.addEventListener("touchstart", touch)
+canvas.addEventListener("touchmove", touch)
+canvas.addEventListener("touchend", () => {
+  control.tx = null
+  control.ty = null
+  control.selected = null
 })
 
 
 canvas.addEventListener("mousemove", e => {
   e.preventDefault()
-  touch(e.clientX, e.clientY)
+  controlEvent(e.clientX, e.clientY)
 })
 
 
