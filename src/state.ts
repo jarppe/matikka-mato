@@ -58,3 +58,8 @@ export const control: Control = {
   tx:       null,
   ty:       null,
 }
+
+
+let fullscreen = false
+
+export const isFullscreen = () => fullscreen

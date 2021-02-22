@@ -1,4 +1,5 @@
 import { control, ctx, game, isDebug, isMobile } from "./state"
+import { isSound } from "./sounds"
 
 
 const drawDebugInfo = () => {
@@ -270,17 +271,64 @@ const drawControl = isMobile ? drawControlFunc : () => {}
 
 
 const drawMiscControls = () => {
-  const { width, height, wormWidth } = game
+  const { width, wormWidth } = game
+  const onStroke = "rgba(0, 255, 0, 1)",
+        onFill = "rgba(0, 192, 0, 1)",
+        offStroke = "rgba(64, 128, 64, 1)"
 
   // Sound on/off
   ctx.save()
-  ctx.fillStyle = "rgba(0, 255, 0, 0.5)"
+
   ctx.translate(width - (wormWidth * 3), wormWidth)
-  ctx.fillRect(0, 0, 2 * wormWidth, 2* wormWidth)
+  ctx.scale(2 * wormWidth, 2 * wormWidth)
+
+  ctx.lineWidth = 0.08
+  ctx.lineJoin = "round"
+  ctx.strokeStyle = isSound() ? onStroke : offStroke
+  ctx.fillStyle = onFill
+  ctx.beginPath()
+  ctx.moveTo(0.1, 0.35)
+  ctx.lineTo(0.3, 0.35)
+  ctx.lineTo(0.55, 0.15)
+  ctx.lineTo(0.55, 0.85)
+  ctx.lineTo(0.3, 0.65)
+  ctx.lineTo(0.1, 0.65)
+  ctx.closePath()
+  if (isSound()) ctx.fill()
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.arc(0.5, 0.5, 0.3, -1, 1, false)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.arc(0.5, 0.5, 0.45, -1, 1, false)
+  ctx.stroke()
+
   ctx.restore()
 
   // Fullscreen
   ctx.save()
+
+  ctx.translate(width - (wormWidth * 2), 4.5 * wormWidth)
+  ctx.scale(wormWidth, wormWidth)
+
+  ctx.lineWidth = 0.08
+  ctx.lineJoin = "round"
+  ctx.strokeStyle = onStroke
+  ctx.fillStyle = onFill
+  for (let i = 0; i < 4; i++) {
+    ctx.beginPath()
+    ctx.moveTo(1.1, 0)
+    ctx.lineTo(0.8, 0.3)
+    ctx.lineTo(0.8, 0.2)
+    ctx.lineTo(0.4, 0.2)
+    ctx.lineTo(0.4, -0.2)
+    ctx.lineTo(0.8, -0.2)
+    ctx.lineTo(0.8, -0.3)
+    ctx.closePath()
+    ctx.stroke()
+    ctx.rotate(PIp2)
+  }
+
   ctx.restore()
 }
 

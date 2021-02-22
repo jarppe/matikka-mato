@@ -3,6 +3,7 @@ import * as test from "./test"
 import { canvas, toggleDebug, game, control } from "./state"
 import { draw } from "./draw"
 import { move } from "./move"
+import { toggleSound } from "./sounds"
 
 
 const initGame = () => {
@@ -105,10 +106,34 @@ const controlButton = () => {
 
 
 const controlEvent = (tx: number, ty: number) => {
+  const { width, wormWidth } = game
   const { x, y, r, dx, dy } = control
-  const cx     = tx - x - dx,
-        cy     = ty - y - dy,
+  const sx     = tx - dx,
+        sy     = ty - dy,
+        cx     = sx - x,
+        cy     = sy - y,
         pauseR = r * 0.2
+
+  const miscCtrlX1   = width - (wormWidth * 3),
+        miscCtrlX2   = miscCtrlX1 + wormWidth,
+        soundY1      = wormWidth,
+        soundY2      = soundY1 + (2 * wormWidth),
+        fullscreenY1 = 4.5 * wormWidth,
+        fullscreenY2 = fullscreenY1 + (2 * wormWidth)
+
+  //console.log(sx.toFixed(0), sy.toFixed(0))
+  //console.log(miscCtrlX1.toFixed(0), miscCtrlX2.toFixed(0))
+
+  if ((sx >= miscCtrlX1) && (sx <= miscCtrlX2)) {
+    if ((sy >= soundY1) && (sy <= soundY2)) {
+      toggleSound()
+      return
+    }
+    if ((sy >= fullscreenY1) && (sy <= fullscreenY2)) {
+      console.log("fullscreen!", Date.now())
+      return
+    }
+  }
 
   if ((Math.abs(cx) > r) || Math.abs(cy) > r) {
     control.tx = null
