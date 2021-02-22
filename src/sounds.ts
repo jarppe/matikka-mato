@@ -9,7 +9,7 @@ const audioData: AudioData[] = []
 let audioInit = false
 
 
-const play: Play = (name: string) => {
+const makeAudio: Play = (name: string) => {
   const audio = new Audio()
   audioData.push([audio, `sounds/${ name }.mp3`])
   return () => {
@@ -21,9 +21,9 @@ const play: Play = (name: string) => {
 }
 
 
-export const crash = play("crash")
-export const squeak = play("squeak")
-export const chaching = play("chaching")
+export const crash = makeAudio("crash")
+export const squeak = makeAudio("squeak")
+export const chaching = makeAudio("chaching")
 
 
 export const isSound = () => sound
