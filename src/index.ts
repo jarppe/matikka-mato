@@ -194,10 +194,14 @@ canvas.addEventListener("mouseleave", controlClear)
 
 
 const resize = () => {
-  const width     = canvas.clientWidth,
-        height    = canvas.clientHeight,
+  const de        = document.documentElement,
+        width     = de.clientWidth,
+        height    = de.clientHeight,
         cbr       = canvas.getBoundingClientRect(),
         wormWidth = width * 0.02
+
+  canvas.width = width
+  canvas.height = height
 
   game.width = width
   game.height = height
