@@ -121,9 +121,6 @@ const controlEvent = (tx: number, ty: number) => {
         fullscreenY1 = 4.5 * wormWidth,
         fullscreenY2 = fullscreenY1 + (2 * wormWidth)
 
-  //console.log(sx.toFixed(0), sy.toFixed(0))
-  //console.log(miscCtrlX1.toFixed(0), miscCtrlX2.toFixed(0))
-
   if ((sx >= miscCtrlX1) && (sx <= miscCtrlX2)) {
     if ((sy >= soundY1) && (sy <= soundY2)) {
       toggleSound()
@@ -201,9 +198,6 @@ const resize = () => {
         height    = canvas.clientHeight,
         cbr       = canvas.getBoundingClientRect(),
         wormWidth = width * 0.02
-
-  canvas.width = width
-  canvas.height = height
 
   game.width = width
   game.height = height

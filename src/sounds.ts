@@ -13,7 +13,6 @@ const makeAudio: Play = (name: string) => {
   const audio = new Audio()
   audioData.push([audio, `sounds/${ name }.mp3`])
   return () => {
-    console.log("playing", name, sound)
     if (sound) {
       audio.play().catch(err => console.error(err))
     }
