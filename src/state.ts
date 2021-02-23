@@ -43,8 +43,6 @@ export type Control = {
   dx: number
   dy: number
   selected: Heading | null
-  tx: number | null
-  ty: number | null
 }
 
 
@@ -55,8 +53,6 @@ export const control: Control = {
   dx:       0,
   dy:       0,
   selected: null,
-  tx:       null,
-  ty:       null,
 }
 
 

@@ -105,53 +105,49 @@ const controlButton = () => {
 }
 
 
-const controlEvent = (tx: number, ty: number) => {
+const controlEvent = (touchX: number, touchY: number) => {
   const { width, wormWidth } = game
   const { x, y, r, dx, dy } = control
-  const sx     = tx - dx,
-        sy     = ty - dy,
-        cx     = sx - x,
-        cy     = sy - y,
-        pauseR = r * 0.2
+  const canvasX = touchX - dx,
+        canvasY = touchY - dy
 
-  const miscCtrlX1   = width - (wormWidth * 3),
-        miscCtrlX2   = miscCtrlX1 + wormWidth,
+  const miscCtrlX1   = width - (3 * wormWidth),
+        miscCtrlX2   = miscCtrlX1 + (2 * wormWidth),
         soundY1      = wormWidth,
         soundY2      = soundY1 + (2 * wormWidth),
         fullscreenY1 = 4.5 * wormWidth,
         fullscreenY2 = fullscreenY1 + (2 * wormWidth)
 
-  if ((sx >= miscCtrlX1) && (sx <= miscCtrlX2)) {
-    if ((sy >= soundY1) && (sy <= soundY2)) {
+  if ((canvasX >= miscCtrlX1) && (canvasX <= miscCtrlX2)) {
+    if ((canvasY >= soundY1) && (canvasY <= soundY2)) {
       toggleSound()
       return
     }
-    if ((sy >= fullscreenY1) && (sy <= fullscreenY2)) {
+    if ((canvasY >= fullscreenY1) && (canvasY <= fullscreenY2)) {
       console.log("fullscreen!", Date.now())
       return
     }
   }
 
-  if ((Math.abs(cx) > r) || Math.abs(cy) > r) {
-    control.tx = null
-    control.ty = null
+  const controlX   = canvasX - x,
+        controlY   = canvasY - y,
+        buttonSize = r * 0.2
+
+  if ((Math.abs(controlX) > r) || Math.abs(controlY) > r) {
     control.selected = null
     return
   }
 
-  control.tx = tx - dx
-  control.ty = ty - dy
-
-  if ((Math.abs(cy) < pauseR) && (Math.abs(cx) < pauseR)) {
+  if ((Math.abs(controlY) < buttonSize) && (Math.abs(controlX) < buttonSize)) {
     control.selected = null
     controlButton()
     return
   }
 
-  if (Math.abs(cy) < Math.abs(cx)) {
-    control.selected = cx < 0 ? 3 : 1
+  if (Math.abs(controlY) < Math.abs(controlX)) {
+    control.selected = controlX < 0 ? 3 : 1
   } else {
-    control.selected = cy < 0 ? 0 : 2
+    control.selected = controlY < 0 ? 0 : 2
   }
 
   turn(control.selected)
@@ -171,8 +167,6 @@ const touch = (e: TouchEvent) => {
 const controlClear = (e: TouchEvent | MouseEvent) => {
   e.preventDefault()
   e.stopPropagation()
-  control.tx = null
-  control.ty = null
   control.selected = null
 }
 
@@ -186,8 +180,10 @@ canvas.addEventListener("mousedown", e => {
   e.preventDefault()
   controlEvent(e.clientX, e.clientY)
 })
-
-
+canvas.addEventListener("mousemove", e => {
+  e.clientX
+  e.clientY
+})
 canvas.addEventListener("mouseup", controlClear)
 canvas.addEventListener("mouseout", controlClear)
 canvas.addEventListener("mouseleave", controlClear)
