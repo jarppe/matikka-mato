@@ -284,6 +284,7 @@ const drawMiscControls = () => {
 
   ctx.lineWidth = 0.08
   ctx.lineJoin = "round"
+  ctx.strokeRect(0, 0, 1, 1)
   ctx.strokeStyle = isSound() ? onStroke : offStroke
   ctx.fillStyle = onFill
   ctx.beginPath()
